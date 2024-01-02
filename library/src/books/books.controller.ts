@@ -9,35 +9,47 @@ import {
 } from '@nestjs/common';
 
 import { BooksService } from './books.service';
-import { CreateBookDto } from './interfaces/dto/create-book.interface';
 import { BookDocument } from './schemas/book.schema';
-import { UpdateBookDto } from './interfaces/dto/update-book.interface';
-import { IParamId } from './interfaces/param-id.interface';
+import { CreateBookDto } from './validation/dto/create-book.dto';
+import { UpdateBookDto } from './validation/dto/update-book.dto';
+import { ObjectidValidationPipe } from '../pipes/objectid.validation.pipe';
+import { ValidationCustomPipe } from '../pipes/validation.custom.pipe';
 
 @Controller('books')
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
   @Get()
-  public async getAll() {
+  public async getAll(): Promise<BookDocument[]> {
     return this.booksService.findAll();
   }
 
+  @Get(':id')
+  public async getById(
+    @Param('id', ObjectidValidationPipe) id: string,
+  ): Promise<BookDocument> {
+    return this.booksService.findById(id);
+  }
+
   @Post()
-  public async create(@Body() body: CreateBookDto): Promise<BookDocument> {
+  public async create(
+    @Body(ValidationCustomPipe) body: CreateBookDto,
+  ): Promise<BookDocument> {
     return this.booksService.create(body);
   }
 
   @Put(':id')
   public async update(
-    @Param() { id }: IParamId,
-    @Body() body: UpdateBookDto,
+    @Param('id', ObjectidValidationPipe) id: string,
+    @Body(ValidationCustomPipe) body: UpdateBookDto,
   ): Promise<BookDocument> {
     return this.booksService.update(id, body);
   }
 
   @Delete(':id')
-  public async delete(@Param() { id }: IParamId): Promise<BookDocument> {
+  public async delete(
+    @Param('id', ObjectidValidationPipe) id: string,
+  ): Promise<BookDocument> {
     return this.booksService.delete(id);
   }
 }

@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model } from 'mongoose';
 
-import { CreateBookDto } from './interfaces/dto/create-book.interface';
 import { Book, BookDocument } from './schemas/book.schema';
-import { UpdateBookDto } from './interfaces/dto/update-book.interface';
+import { CreateBookDto } from './validation/dto/create-book.dto';
+import { UpdateBookDto } from './validation/dto/update-book.dto';
 
 @Injectable()
 export class BooksService {
@@ -21,6 +21,15 @@ export class BooksService {
 
   public async findAll(): Promise<BookDocument[]> {
     return this.BookModel.find().exec();
+  }
+
+  public async findById(id: string): Promise<BookDocument> {
+    const book = await this.BookModel.findById(id).exec();
+    if (!book) {
+      throw new BadRequestException('There is no such book');
+    }
+
+    return book;
   }
 
   public async update(id: string, data: UpdateBookDto): Promise<BookDocument> {
