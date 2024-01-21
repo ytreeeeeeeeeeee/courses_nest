@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { BooksModule } from './books/books.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { BookCommentsModule } from './book-comments/book-comments.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { UsersModule } from './users/users.module';
     BooksModule,
     AuthModule,
     UsersModule,
+    BookCommentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

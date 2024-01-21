@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import {
   ArgumentMetadata,
   BadRequestException,
@@ -18,7 +19,11 @@ export class ValidationCustomPipe implements PipeTransform {
     const errors = await validate(object);
 
     if (errors.length > 0) {
-      throw new BadRequestException('Validation failed');
+      const formattedErrors: { [key: string]: string[] } = {};
+      errors.forEach((error) => {
+        formattedErrors[error.property] = Object.values(error.constraints);
+      });
+      throw new BadRequestException(JSON.stringify(formattedErrors));
     }
 
     return value;
